@@ -16,4 +16,4 @@ install:
   - composer install
 
 script:
-  - phpunit
+  - php ./vendor/bin/phpunit
