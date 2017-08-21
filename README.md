@@ -31,7 +31,7 @@ $bankIDService = new BankIDService(
     'https://appapi2.test.bankid.com/rp/v4?wsdl',
     ['local_cert' => 'PATH_TO_TEST_CERT.pem'],
     false
-  );
+);
 
 // Signing. Step 1 - Get orderRef
 $response = $bankIDService->getSignResponse('PERSONAL_NUMBER', 'Test user data');
