@@ -55,7 +55,7 @@ if($authResponse->progressStatus == CollectResponse::PROGRESS_STATUS_COMPLETE) {
 
 1. Copy phpunit.xml.dist to phpunit.xml
 ``` bash
-$ cp cp phpunit.xml.dist phpunit.xml
+$ cp phpunit.xml.dist phpunit.xml
 ```
 
 2. Create and add test personal number to mobile app. [Demo BankID site](https://demo.bankid.com)
@@ -67,11 +67,6 @@ $ cp cp phpunit.xml.dist phpunit.xml
 ```
 
 4. Execute
-
-``` bash
-$ phpunit
-```
-   or
 
 ``` bash
 $ ./vendor/bin/phpunit
