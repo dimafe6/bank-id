@@ -1,4 +1,7 @@
 # Bank-ID
+=======
+
+Library for connect Swedish BankID to your application.
 
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg)](LICENSE.md)
 [![Build Status](https://travis-ci.org/dimafe6/bank-id.svg?branch=dev)](https://travis-ci.org/dimafe6/bank-id)
