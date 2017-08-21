@@ -71,7 +71,7 @@ class BankIDServiceTest extends TestCase
                 $this->fail('Error collect response');
             }
             $attemps++;
-        } while ($collectResponse->progressStatus !== CollectResponse::PROGRESS_STATUS_COMPLETE || $attemps <= 12);
+        } while ($collectResponse->progressStatus !== CollectResponse::PROGRESS_STATUS_COMPLETE && $attemps <= 12);
 
         $this->assertEquals(CollectResponse::PROGRESS_STATUS_COMPLETE, $collectResponse->progressStatus);
 
@@ -108,7 +108,7 @@ class BankIDServiceTest extends TestCase
                 $this->fail('Error collect response');
             }
             $attemps++;
-        } while ($collectResponse->progressStatus !== CollectResponse::PROGRESS_STATUS_COMPLETE || $attemps <= 12);
+        } while ($collectResponse->progressStatus !== CollectResponse::PROGRESS_STATUS_COMPLETE && $attemps <= 12);
 
         $this->assertEquals(CollectResponse::PROGRESS_STATUS_COMPLETE, $collectResponse->progressStatus);
 
