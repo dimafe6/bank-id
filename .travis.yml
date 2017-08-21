@@ -10,7 +10,10 @@ php:
   - 5.6
   - 7.0
 
-sudo: required
+sudo: false
+
+install:
+  - composer install
 
 script:
-  - composer install
+  - phpunit
