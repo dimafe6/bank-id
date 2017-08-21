@@ -60,6 +60,8 @@ class BankIDServiceTest extends TestCase
 
         fwrite(STDOUT, "\n");
 
+        $attemps = 0;
+
         do {
             fwrite(STDOUT, "Waiting 5sec for confirmation from BankID mobile application...\n");
             sleep(5);
@@ -68,7 +70,8 @@ class BankIDServiceTest extends TestCase
             if (!$collectResponse instanceof CollectResponse) {
                 $this->fail('Error collect response');
             }
-        } while ($collectResponse->progressStatus !== CollectResponse::PROGRESS_STATUS_COMPLETE);
+            $attemps++;
+        } while ($collectResponse->progressStatus !== CollectResponse::PROGRESS_STATUS_COMPLETE || $attemps <= 12);
 
         $this->assertEquals(CollectResponse::PROGRESS_STATUS_COMPLETE, $collectResponse->progressStatus);
 
@@ -94,6 +97,8 @@ class BankIDServiceTest extends TestCase
 
         fwrite(STDOUT, "\n");
 
+        $attemps = 0;
+
         do {
             fwrite(STDOUT, "Waiting 5sec for confirmation from BankID mobile application...\n");
             sleep(5);
@@ -102,7 +107,8 @@ class BankIDServiceTest extends TestCase
             if (!$collectResponse instanceof CollectResponse) {
                 $this->fail('Error collect response');
             }
-        } while ($collectResponse->progressStatus !== CollectResponse::PROGRESS_STATUS_COMPLETE);
+            $attemps++;
+        } while ($collectResponse->progressStatus !== CollectResponse::PROGRESS_STATUS_COMPLETE || $attemps <= 12);
 
         $this->assertEquals(CollectResponse::PROGRESS_STATUS_COMPLETE, $collectResponse->progressStatus);
 
