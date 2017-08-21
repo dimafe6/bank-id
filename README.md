@@ -3,6 +3,9 @@ Bank-ID
 
 Library for connect Swedish BankID to your application.
 
+[![Latest Stable Version](https://poser.pugx.org/dimafe6/bank-id/v/stable)](https://packagist.org/packages/dimafe6/bank-id)
+[![Latest Unstable Version](https://poser.pugx.org/dimafe6/bank-id/v/unstable)](https://packagist.org/packages/dimafe6/bank-id)
+[![Total Downloads](https://poser.pugx.org/dimafe6/bank-id/downloads)](https://packagist.org/packages/dimafe6/bank-id)
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg)](LICENSE.md)
 [![Build Status](https://travis-ci.org/dimafe6/bank-id.svg?branch=dev)](https://travis-ci.org/dimafe6/bank-id)
 
