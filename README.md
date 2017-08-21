@@ -1,4 +1,4 @@
-# Bank-ID
+Bank-ID
 =======
 
 Library for connect Swedish BankID to your application.
