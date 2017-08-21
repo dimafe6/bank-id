@@ -11,3 +11,6 @@ php:
   - 7.0
 
 sudo: required
+
+script:
+  - composer install
