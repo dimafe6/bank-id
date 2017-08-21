@@ -97,7 +97,8 @@ class BankIDService
 
     /**
      * @param $personalNumber
-     * @return OrderResponse|null
+     * @return OrderResponse
+     * @throws \SoapFault
      */
     public function getAuthResponse($personalNumber)
     {
@@ -107,45 +108,33 @@ class BankIDService
             ],
         ];
 
-        try {
-            $response = $this->client->__soapCall(self::METHOD_AUTH, $parameters);
+        $response = $this->client->__soapCall(self::METHOD_AUTH, $parameters);
 
-            if ($response->orderRef && $response->autoStartToken
-            ) {
-                $orderResponse = new OrderResponse();
-                $orderResponse->orderRef = $response->orderRef;
-                $orderResponse->autoStartToken = $response->autoStartToken;
+        $orderResponse = new OrderResponse();
+        $orderResponse->orderRef = $response->orderRef;
+        $orderResponse->autoStartToken = $response->autoStartToken;
 
-                return $orderResponse;
-            }
-
-            return null;
-        } catch (\Exception $exception) {
-            return null;
-        }
+        return $orderResponse;
     }
 
     /**
      * @param string $orderRef
      * @return CollectResponse
+     * @throws \SoapFault
      */
     public function collectResponse($orderRef)
     {
-        try {
-            $response = $this->client->__soapCall(self::METHOD_COLLECT, ['orderRef' => $orderRef]);
+        $response = $this->client->__soapCall(self::METHOD_COLLECT, ['orderRef' => $orderRef]);
 
-            $collect = new CollectResponse();
-            $collect->progressStatus = $response->progressStatus;
+        $collect = new CollectResponse();
+        $collect->progressStatus = $response->progressStatus;
 
-            if ($collect->progressStatus == CollectResponse::PROGRESS_STATUS_COMPLETE) {
-                $collect->userInfo = $response->userInfo;
-                $collect->signature = $response->signature;
-                $collect->ocspResponse = $response->ocspResponse;
-            }
-
-            return $collect;
-        } catch (\Exception $exception) {
-            return null;
+        if ($collect->progressStatus == CollectResponse::PROGRESS_STATUS_COMPLETE) {
+            $collect->userInfo = $response->userInfo;
+            $collect->signature = $response->signature;
+            $collect->ocspResponse = $response->ocspResponse;
         }
+
+        return $collect;
     }
 }
