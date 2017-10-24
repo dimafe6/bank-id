@@ -2,31 +2,30 @@
 
 namespace Dimafe6\BankID\Service;
 
-use Dimafe6\BankID\Model\CollectResponse;
-use Dimafe6\BankID\Model\OrderResponse;
 use SoapClient;
+use Dimafe6\BankID\Model\OrderResponse;
+use Dimafe6\BankID\Model\CollectResponse;
 
 /**
- * Class BankIDService
+ * Class BankIDService.
  *
  * @category PHP
- * @package  Dimafe6\BankID\Service
  * @author   Dmytro Feshchenko <dimafe2000@gmail.com>
  */
 class BankIDService
 {
     /**
-     * Bank ID Sign method name
+     * Bank ID Sign method name.
      */
     const METHOD_SIGN = 'Sign';
 
     /**
-     * Bank ID Authenticate method name
+     * Bank ID Authenticate method name.
      */
     const METHOD_AUTH = 'Authenticate';
 
     /**
-     * Bank ID Collect method name
+     * Bank ID Collect method name.
      */
     const METHOD_COLLECT = 'Collect';
 
@@ -53,14 +52,14 @@ class BankIDService
      */
     public function __construct($wsdlUrl, array $options, $enableSsl)
     {
-        if (!$enableSsl) {
-            $context = stream_context_create(array(
+        if (! $enableSsl) {
+            $context = stream_context_create([
                 'ssl' => [
                     'verify_peer' => false,
                     'verify_peer_name' => false,
                     'allow_self_signed' => true,
                 ],
-            ));
+            ]);
 
             $options['stream_context'] = $context;
         }
@@ -104,7 +103,7 @@ class BankIDService
     {
         $parameters = [
             'parameters' => [
-                'personalNumber' => $personalNumber
+                'personalNumber' => $personalNumber,
             ],
         ];
 
