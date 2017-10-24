@@ -99,7 +99,7 @@ class BankIDService
      * @return OrderResponse
      * @throws \SoapFault
      */
-    public function getAuthResponse($personalNumber)
+    public function getAuthResponse($personalNumber = null)
     {
         $parameters = [
             'parameters' => [
