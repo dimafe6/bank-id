@@ -2,31 +2,30 @@
 
 namespace Dimafe6\BankID\Service;
 
-use Dimafe6\BankID\Model\CollectResponse;
-use Dimafe6\BankID\Model\OrderResponse;
 use SoapClient;
+use Dimafe6\BankID\Model\OrderResponse;
+use Dimafe6\BankID\Model\CollectResponse;
 
 /**
- * Class BankIDService
+ * Class BankIDService.
  *
  * @category PHP
- * @package  Dimafe6\BankID\Service
  * @author   Dmytro Feshchenko <dimafe2000@gmail.com>
  */
 class BankIDService
 {
     /**
-     * Bank ID Sign method name
+     * Bank ID Sign method name.
      */
     const METHOD_SIGN = 'Sign';
 
     /**
-     * Bank ID Authenticate method name
+     * Bank ID Authenticate method name.
      */
     const METHOD_AUTH = 'Authenticate';
 
     /**
-     * Bank ID Collect method name
+     * Bank ID Collect method name.
      */
     const METHOD_COLLECT = 'Collect';
 
@@ -53,14 +52,14 @@ class BankIDService
      */
     public function __construct($wsdlUrl, array $options, $enableSsl)
     {
-        if (!$enableSsl) {
-            $context = stream_context_create(array(
+        if (! $enableSsl) {
+            $context = stream_context_create([
                 'ssl' => [
                     'verify_peer' => false,
                     'verify_peer_name' => false,
                     'allow_self_signed' => true,
                 ],
-            ));
+            ]);
 
             $options['stream_context'] = $context;
         }
@@ -76,17 +75,22 @@ class BankIDService
      * @return OrderResponse
      * @throws \SoapFault
      */
-    public function getSignResponse($personalNumber, $userVisibleData)
+    public function getSignResponse($personalNumber, $userVisibleData, $userHiddenData = null)
     {
         $userVisibleData = base64_encode($userVisibleData);
         $parameters = [
-            'parameters' => [
-                'personalNumber' => $personalNumber,
-                'userVisibleData' => $userVisibleData,
-            ],
+            'personalNumber' => $personalNumber,
+            'userVisibleData' => $userVisibleData,
         ];
 
-        $response = $this->client->__soapCall(self::METHOD_SIGN, $parameters);
+        if(!empty($userHiddenData)) {
+	         $userHiddenData = base64_encode($userHiddenData);
+	         $parameters['userNonVisibleData'] = $userHiddenData;
+        }
+
+        $options = ['parameters' => $parameters];
+
+        $response = $this->client->__soapCall(self::METHOD_SIGN, $options);
 
         $orderResponse = new OrderResponse();
         $orderResponse->orderRef = $response->orderRef;
@@ -100,15 +104,15 @@ class BankIDService
      * @return OrderResponse
      * @throws \SoapFault
      */
-    public function getAuthResponse($personalNumber)
+    public function getAuthResponse($personalNumber = null)
     {
         $parameters = [
-            'parameters' => [
-                'personalNumber' => $personalNumber
-            ],
+            'personalNumber' => $personalNumber,
         ];
 
-        $response = $this->client->__soapCall(self::METHOD_AUTH, $parameters);
+        $options = ['parameters' => $parameters];
+
+        $response = $this->client->__soapCall(self::METHOD_AUTH, $options);
 
         $orderResponse = new OrderResponse();
         $orderResponse->orderRef = $response->orderRef;
