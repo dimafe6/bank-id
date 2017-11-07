@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <phpunit colors="true" bootstrap="vendor/autoload.php" verbose="true" stopOnFailure="true">
-    <php>
-        <env name="personalNumber" value=""/>
-    </php>
     <testsuites>
         <testsuite name="BankID Test Suite">
             <directory suffix="Test.php">./tests/</directory>

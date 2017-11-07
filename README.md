@@ -3,6 +3,7 @@ Bank-ID
 
 Library for connect Swedish BankID to your application.
 
+[![codecov](https://codecov.io/gh/dimafe6/bank-id/branch/dev/graph/badge.svg)](https://codecov.io/gh/dimafe6/bank-id)
 [![Latest Stable Version](https://poser.pugx.org/dimafe6/bank-id/v/stable)](https://packagist.org/packages/dimafe6/bank-id)
 [![Latest Unstable Version](https://poser.pugx.org/dimafe6/bank-id/v/unstable)](https://packagist.org/packages/dimafe6/bank-id)
 [![Total Downloads](https://poser.pugx.org/dimafe6/bank-id/downloads)](https://packagist.org/packages/dimafe6/bank-id)
@@ -12,7 +13,7 @@ Library for connect Swedish BankID to your application.
 ## Requirements
 
 * PHP 5.6+ or 7.0+
-* [soap-client](http://php.net/manual/ru/class.soapclient.php)
+* [soap-client](http://php.net/manual/class.soapclient.php)
 
 ## Install
 
@@ -61,15 +62,7 @@ if($authResponse->progressStatus == CollectResponse::PROGRESS_STATUS_COMPLETE) {
 $ cp phpunit.xml.dist phpunit.xml
 ```
 
-2. Create and add test personal number to mobile app. [Demo BankID site](https://demo.bankid.com)
-
-3. Set personal number in phpunit.xml:
-
-``` xml
-<env name="personalNumber" value=""/>
-```
-
-4. Execute
+2. Execute
 
 ``` bash
 $ ./vendor/bin/phpunit

@@ -3,9 +3,10 @@
 namespace Dimafe6\BankID\Model;
 
 /**
- * Class CollectResponse.
+ * Class CollectResponse
  *
  * @category PHP
+ * @package  Dimafe6\BankID\Model
  * @author   Dmytro Feshchenko <dimafe2000@gmail.com>
  */
 class CollectResponse
@@ -26,14 +27,14 @@ class CollectResponse
      * String (b64). XML-signature. (If the order is COMPLETE). The content of the
      * signature is described in BankID Signature Profile specification.
      *
-     * @var string
+     * @var string|null
      */
     public $signature;
 
     /**
-     * UserInfoType (If the order is COMPLETE).
+     * UserInfoType (If the order is COMPLETE)
      *
-     * @var string
+     * @var UserInfo|null
      */
     public $userInfo;
 
@@ -44,9 +45,9 @@ class CollectResponse
      * The nonce is calculated as:
      * SHA-1 hash over the base 64 XML signature encoded as UTF-8.
      * 12 random bytes is added after the hash
-     * The nonce is 32 bytes (20 + 12).
+     * The nonce is 32 bytes (20 + 12)
      *
-     * @var string
+     * @var string|null
      */
     public $ocspResponse;
 }
