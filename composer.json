@@ -1,6 +1,7 @@
 {
     "name": "dimafe6/bank-id",
     "type": "library",
+    "version": "1.0.1",
     "description": "Library for Swedish BankID",
     "keywords": [
         "dimafe6",

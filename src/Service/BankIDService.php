@@ -162,7 +162,7 @@ class BankIDService
      * @return OrderResponse
      * @throws \SoapFault
      */
-    public function getAuthResponse($personalNumber = null)
+    public function getAuthResponse($personalNumber)
     {
         $parameters = [
             'personalNumber' => $personalNumber,
