@@ -2,6 +2,7 @@ Bank-ID
 =======
 
 Library for connect Swedish BankID to your application.
+This library implements BankID API V5. If your needed library for a BankID API V4 please use version 1.*
 
 [![codecov](https://codecov.io/gh/dimafe6/bank-id/branch/dev/graph/badge.svg)](https://codecov.io/gh/dimafe6/bank-id)
 [![Latest Stable Version](https://poser.pugx.org/dimafe6/bank-id/v/stable)](https://packagist.org/packages/dimafe6/bank-id)
@@ -13,7 +14,7 @@ Library for connect Swedish BankID to your application.
 ## Requirements
 
 * PHP 5.6+ or 7.0+
-* [soap-client](http://php.net/manual/class.soapclient.php)
+* [curl](http://php.net/manual/en/book.curl.php)
 
 ## Install
 
@@ -29,18 +30,22 @@ $ composer require dimafe6/bank-id
 <?php
 // Create BankIDService
 $bankIDService = new BankIDService(
-    'https://appapi2.test.bankid.com/rp/v4?wsdl',
-    ['local_cert' => 'PATH_TO_TEST_CERT.pem'],
-    false
+    'https://appapi2.test.bankid.com/rp/v5/',
+    $_SERVER["REMOTE_ADDR"],
+    [
+        'verify' => false,
+        'cert'   => 'PATH_TO_TEST_CERT.pem',
+    ]
 );
 
 // Signing. Step 1 - Get orderRef
-$response = $bankIDService->getSignResponse('PERSONAL_NUMBER', 'Test user data');
+/** @var OrderResponse $response */
+$response = $bankIDService->getSignResponse('PERSONAL_NUMBER', 'User visible data');
 
 // Signing. Step 2 - Collect orderRef. 
-// Repeat until $collectResponse->progressStatus == CollectResponse::PROGRESS_STATUS_COMPLETE
+// Repeat until $collectResponse->status !== CollectResponse::STATUS_COMPLETED
 $collectResponse = $bankIDService->collectResponse($response->orderRef);
-if($collectResponse->progressStatus == CollectResponse::PROGRESS_STATUS_COMPLETE) {
+if($collectResponse->status === CollectResponse::STATUS_COMPLETED) {
     return true; //Signed successfully
 }
 
@@ -48,10 +53,19 @@ if($collectResponse->progressStatus == CollectResponse::PROGRESS_STATUS_COMPLETE
 $response = $bankIDService->getAuthResponse('PERSONAL_NUMBER');
 
 // Authorize. Step 2 - Collect orderRef. 
-// Repeat until $authResponse->progressStatus == CollectResponse::PROGRESS_STATUS_COMPLETE
+// Repeat until $authResponse->status !== CollectResponse::STATUS_COMPLETED
 $authResponse = $bankIDService->collectResponse($response->orderRef);
-if($authResponse->progressStatus == CollectResponse::PROGRESS_STATUS_COMPLETE) {
+if($authResponse->status == CollectResponse::STATUS_COMPLETED) {
     return true; //Authorized
+}
+
+// Cancel auth or collect order
+// Authorize. Step 1 - Get orderRef
+$response = $bankIDService->getAuthResponse('PERSONAL_NUMBER');
+
+// Cancel authorize order
+if($bankIDService->cancelOrder($response->orderRef)) {
+    return 'Authorization canceled';
 }
 ```
 

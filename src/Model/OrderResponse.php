@@ -5,19 +5,12 @@ namespace Dimafe6\BankID\Model;
 /**
  * Class OrderResponse
  *
- * @category PHP
- * @package  Dimafe6\BankID\Model
- * @author   Dmytro Feshchenko <dimafe2000@gmail.com>
+ * Response from auth and sign methods
+ *
+ * @property string $orderRef Used to collect the status of the order.
+ * @property string $autoStartToken Used as reference to this order when the client is started automatically.
  */
-class OrderResponse
+class OrderResponse extends AbstractResponseModel
 {
-    /**
-     * @var string
-     */
-    public $orderRef;
 
-    /**
-     * @var string
-     */
-    public $autoStartToken;
 }
