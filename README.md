@@ -38,6 +38,17 @@ $bankIDService = new BankIDService(
     ]
 );
 
+// OR Create BankIDService with ssl verification
+$bankIDService = new BankIDService(
+    'https://appapi2.test.bankid.com/rp/v5/',
+    $_SERVER["REMOTE_ADDR"],
+    [
+        'verify' =>  'PATH_TO_TEST_CERT.ca',
+        'cert'   => 'PATH_TO_TEST_CERT.crt',
+        'ssl_key'   => 'PATH_TO_TEST_CERT.key',
+    ]
+);
+
 // Signing. Step 1 - Get orderRef
 /** @var OrderResponse $response */
 $response = $bankIDService->getSignResponse('PERSONAL_NUMBER', 'User visible data');
