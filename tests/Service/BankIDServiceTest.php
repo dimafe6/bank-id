@@ -44,6 +44,22 @@ class BankIDServiceTest extends TestCase
     }
 
     /**
+     * @return OrderResponse
+     */
+    public function testSignResponseWithoutPersonalNumber()
+    {
+        $signResponse = $this->bankIDService->getSignResponse(
+            null,
+            'userVisibleData',
+            'userNonVisibleData'
+        );
+
+        $this->assertInstanceOf(OrderResponse::class, $signResponse);
+
+        return $signResponse;
+    }
+
+    /**
      * @depends testSignResponse
      * @param OrderResponse $signResponse
      * @return \Dimafe6\BankID\Model\CollectResponse
@@ -73,6 +89,18 @@ class BankIDServiceTest extends TestCase
     public function testAuthResponse()
     {
         $authResponse = $this->bankIDService->getAuthResponse(self::TEST_PERSONAL_NUMBER);
+
+        $this->assertInstanceOf(OrderResponse::class, $authResponse);
+
+        return $authResponse;
+    }
+
+    /**
+     * @return OrderResponse
+     */
+    public function testAuthResponseWithoutPersonalNumber()
+    {
+        $authResponse = $this->bankIDService->getAuthResponse();
 
         $this->assertInstanceOf(OrderResponse::class, $authResponse);
 

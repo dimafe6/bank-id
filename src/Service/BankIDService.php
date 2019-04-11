@@ -48,19 +48,21 @@ class BankIDService
     }
 
     /**
-     * @param string $personalNumber The personal number of the user. String. 12 digits. Century must be included.
+     * @param string|null $personalNumber The personal number of the user. String. 12 digits. Century must be included.
      * @return OrderResponse
      * @throws ClientException
      */
-    public function getAuthResponse($personalNumber)
+    public function getAuthResponse($personalNumber = null)
     {
         $parameters = [
-            'personalNumber' => $personalNumber,
             'endUserIp'      => $this->endUserIp,
             'requirement'    => [
                 'allowFingerprint' => true,
             ],
         ];
+        if ($personalNumber) {
+            $parameters['personalNumber'] = $personalNumber;
+        }
 
         $responseData = $this->client->post('auth', ['json' => $parameters]);
 
@@ -71,7 +73,7 @@ class BankIDService
 
 
     /**
-     * @param string $personalNumber The personal number of the user. String. 12 digits. Century must be included.
+     * @param string|null $personalNumber The personal number of the user. String. 12 digits. Century must be included.
      * @param string $userVisibleData The text to be displayed and signed.
      * @param string $userHiddenData Data not displayed to the user
      * @return OrderResponse
@@ -80,13 +82,15 @@ class BankIDService
     public function getSignResponse($personalNumber, $userVisibleData, $userHiddenData = '')
     {
         $parameters = [
-            'personalNumber'  => $personalNumber,
             'endUserIp'       => $this->endUserIp,
             'userVisibleData' => base64_encode($userVisibleData),
             'requirement'     => [
                 'allowFingerprint' => true,
             ],
         ];
+        if ($personalNumber) {
+            $parameters['personalNumber'] = $personalNumber;
+        }
 
         if (!empty($userHiddenData)) {
             $parameters['userNonVisibleData'] = base64_encode($userHiddenData);

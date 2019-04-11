@@ -25,6 +25,8 @@ $ composer require dimafe6/bank-id
 ```
 
 ## Usage
+Either you let the user enter their personal number and pass to BankID or you only pass the order ref and receive the
+personal number from the response from BankID.
 
 ```php
 <?php
@@ -48,7 +50,10 @@ $bankIDService = new BankIDService(
         'ssl_key'   => 'PATH_TO_TEST_CERT.key',
     ]
 );
+```
 
+##### Example with personal number
+```php
 // Signing. Step 1 - Get orderRef
 /** @var OrderResponse $response */
 $response = $bankIDService->getSignResponse('PERSONAL_NUMBER', 'User visible data');
@@ -77,6 +82,20 @@ $response = $bankIDService->getAuthResponse('PERSONAL_NUMBER');
 // Cancel authorize order
 if($bankIDService->cancelOrder($response->orderRef)) {
     return 'Authorization canceled';
+}
+```
+
+##### Example without personal number
+```php
+// Authorize. Step 1 - Get orderRef
+$response = $bankIDService->getAuthResponse();
+
+// Authorize. Step 2 - Collect orderRef. 
+// Repeat until $authResponse->status !== CollectResponse::STATUS_COMPLETED
+$authResponse = $bankIDService->collectResponse($response->orderRef);
+if($authResponse->status == CollectResponse::STATUS_COMPLETED) {
+    echo $authResponse->completionData->user->personalNumber;
+    return true; //Authorized
 }
 ```
 
