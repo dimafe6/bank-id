@@ -70,6 +70,47 @@ class BankIDServiceTest extends TestCase
     /**
      * @return OrderResponse
      */
+    public function testSignResponseWithoutPersonalNumber()
+    {
+        $signResponse = $this->bankIDService->getSignResponse(
+            null,
+            'userVisibleData',
+            'userNonVisibleData'
+        );
+
+        $this->assertInstanceOf(OrderResponse::class, $signResponse);
+
+        return $signResponse;
+    }
+
+
+    /**
+     * @depends testSignResponseWithoutPersonalNumber
+     * @param OrderResponse $signResponse
+     * @return \Dimafe6\BankID\Model\CollectResponse
+     */
+    public function testCollectSignResponseWithoutPersonalNumber($signResponse)
+    {
+        $this->assertInstanceOf(OrderResponse::class, $signResponse);
+
+        $attempts = 0;
+        do {
+            fwrite(STDOUT, "\nWaiting confirmation from BankID application...\n");
+            sleep(10);
+
+            $collectResponse = $this->bankIDService->collectResponse($signResponse->orderRef);
+            $attempts++;
+        } while ($collectResponse->status !== CollectResponse::STATUS_COMPLETED && $attempts <= 6);
+
+        $this->assertInstanceOf(CollectResponse::class, $collectResponse);
+        $this->assertEquals(CollectResponse::STATUS_COMPLETED, $collectResponse->status);
+
+        return $collectResponse;
+    }
+
+    /**
+     * @return OrderResponse
+     */
     public function testAuthResponse()
     {
         $authResponse = $this->bankIDService->getAuthResponse(self::TEST_PERSONAL_NUMBER);
@@ -85,6 +126,42 @@ class BankIDServiceTest extends TestCase
      * @return \Dimafe6\BankID\Model\CollectResponse
      */
     public function testCollectAuthResponse($authResponse)
+    {
+        $this->assertInstanceOf(OrderResponse::class, $authResponse);
+
+        $attempts = 0;
+        do {
+            fwrite(STDOUT, "\nWaiting confirmation from BankID application...\n");
+            sleep(10);
+
+            $collectResponse = $this->bankIDService->collectResponse($authResponse->orderRef);
+            $attempts++;
+        } while ($collectResponse->status !== CollectResponse::STATUS_COMPLETED && $attempts <= 6);
+
+        $this->assertInstanceOf(CollectResponse::class, $collectResponse);
+        $this->assertEquals(CollectResponse::STATUS_COMPLETED, $collectResponse->status);
+
+        return $collectResponse;
+    }
+
+    /**
+     * @return OrderResponse
+     */
+    public function testAuthResponseWithoutPersonalNumber()
+    {
+        $authResponse = $this->bankIDService->getAuthResponse();
+
+        $this->assertInstanceOf(OrderResponse::class, $authResponse);
+
+        return $authResponse;
+    }
+
+    /**
+     * @depends testAuthResponseWithoutPersonalNumber
+     * @param OrderResponse $authResponse
+     * @return \Dimafe6\BankID\Model\CollectResponse
+     */
+    public function testCollectAuthResponseWithoutPersonalNumber($authResponse)
     {
         $this->assertInstanceOf(OrderResponse::class, $authResponse);
 
