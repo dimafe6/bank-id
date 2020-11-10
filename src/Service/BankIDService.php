@@ -4,9 +4,8 @@ namespace Dimafe6\BankID\Service;
 
 use Dimafe6\BankID\Model\CollectResponse;
 use Dimafe6\BankID\Model\OrderResponse;
-use OutOfBoundsException;
-use ReflectionClass;
-use SoapClient;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
 
 /**
  * Class BankIDService
@@ -17,186 +16,112 @@ use SoapClient;
  */
 class BankIDService
 {
-    /**
-     * Bank ID Sign method name
-     */
-    const METHOD_SIGN = 'Sign';
-
-    /**
-     * Bank ID Authenticate method name
-     */
-    const METHOD_AUTH = 'Authenticate';
-
-    /**
-     * Bank ID Collect method name
-     */
-    const METHOD_COLLECT = 'Collect';
-
-    /**
-     * @var SoapClient
-     */
+    /** @var Client $client Guzzle http client */
     private $client;
 
-    /**
-     * @var string
-     */
-    private $wsdlUrl;
+    /** @var string $apiUrl BankID API base url */
+    private $apiUrl;
 
-    /**
-     * @var string
-     */
-    private $soapOptions;
+    /** @var array $options Guzzle client options. @see http://docs.guzzlephp.org/en/stable/request-options.html */
+    private $options;
+
+    /** @var string $endUserIp The user IP address as seen by RP. String. IPv4 and IPv6 is allowed */
+    private $endUserIp;
 
     /**
      * BankIDService constructor.
-     * @param string $wsdlUrl Bank ID API url
-     * @param array $options SoapClient options
-     * @param bool $enableSsl Enable SSL
+     * @param string $apiUrl
+     * @param string $endUserIp
+     * @param array $options
      */
-    public function __construct($wsdlUrl, $options = [], $enableSsl = false)
+    public function __construct($apiUrl, $endUserIp, $options = [])
     {
-        if (!$enableSsl) {
-            $context = stream_context_create([
-                'ssl' => [
-                    'verify_peer'       => false,
-                    'verify_peer_name'  => false,
-                    'allow_self_signed' => true,
-                ],
-            ]);
+        $this->apiUrl    = $apiUrl;
+        $this->endUserIp = $endUserIp;
 
-            $options['stream_context'] = $context;
-        }
+        $options['base_uri'] = $apiUrl;
+        $options['json']     = true;
 
-        $this->wsdlUrl = $wsdlUrl;
-        $this->soapOptions = $options;
-        $this->client = new SoapClient($this->wsdlUrl, $this->soapOptions);
+        $this->options = $options;
+
+        $this->client = new Client($this->options);
     }
 
     /**
-     * @return array
-     * @author Dmytro Feshchenko <dimafe2000@gmail.com>
-     */
-    private function availableMethods()
-    {
-        $class = new ReflectionClass(__CLASS__);
-        $constants = $class->getConstants();
-        $results = array_filter($constants, function ($constant) {
-            return false !== strpos($constant, 'METHOD_');
-        }, ARRAY_FILTER_USE_KEY);
-
-        return array_values($results);
-    }
-
-    /**
-     * @param $method
-     * @return bool
-     * @author Dmytro Feshchenko <dimafe2000@gmail.com>
-     */
-    private function isMethodAvailable($method)
-    {
-        return in_array($method, $this->availableMethods());
-    }
-
-    /**
-     * @param string $method
-     * @param array $parameters
-     * @return mixed
-     * @author Dmytro Feshchenko <dimafe2000@gmail.com>
-     */
-    public function soapCall($method, $parameters)
-    {
-        return $this->client->__soapCall($method, $parameters);
-    }
-
-    /**
-     * @param string $method
-     * @param array $parameters
-     * @return mixed
-     * @throws \SoapFault
-     * @throws \OutOfBoundsException
-     * @author Dmytro Feshchenko <dimafe2000@gmail.com>
-     */
-    public function call($method, $parameters)
-    {
-        if (!$this->isMethodAvailable($method)) {
-            throw new OutOfBoundsException("Invalid method '$method'");
-        }
-
-        if (!is_array($parameters)) {
-            throw new \InvalidArgumentException('parameters must be is an array');
-        }
-
-        return $this->soapCall($method, $parameters);
-    }
-
-    /**
-     * @param $personalNumber
-     * @param $userVisibleData
-     * @param null $userHiddenData
+     * @param string|null $personalNumber The personal number of the user. String. 12 digits. Century must be included.
      * @return OrderResponse
+     * @throws ClientException
      */
-    public function getSignResponse($personalNumber, $userVisibleData, $userHiddenData = null)
+    public function getAuthResponse($personalNumber = null)
     {
         $parameters = [
-            'personalNumber'  => $personalNumber,
-            'userVisibleData' => base64_encode($userVisibleData),
+            'endUserIp'      => $this->endUserIp,
+            'requirement'    => [
+                'allowFingerprint' => true,
+            ],
         ];
+        if ($personalNumber) {
+            $parameters['personalNumber'] = $personalNumber;
+        }
+
+        $responseData = $this->client->post('auth', ['json' => $parameters]);
+
+        $response = new OrderResponse($responseData);
+
+        return $response;
+    }
+
+
+    /**
+     * @param string|null $personalNumber The personal number of the user. String. 12 digits. Century must be included.
+     * @param string $userVisibleData The text to be displayed and signed.
+     * @param string $userHiddenData Data not displayed to the user
+     * @return OrderResponse
+     * @throws ClientException
+     */
+    public function getSignResponse($personalNumber, $userVisibleData, $userHiddenData = '')
+    {
+        $parameters = [
+            'endUserIp'       => $this->endUserIp,
+            'userVisibleData' => base64_encode($userVisibleData),
+            'requirement'     => [
+                'allowFingerprint' => true,
+            ],
+        ];
+        if ($personalNumber) {
+            $parameters['personalNumber'] = $personalNumber;
+        }
 
         if (!empty($userHiddenData)) {
             $parameters['userNonVisibleData'] = base64_encode($userHiddenData);
         }
 
-        $options = ['parameters' => $parameters];
+        $responseData = $this->client->post('sign', ['json' => $parameters]);
 
-        $response = $this->call(self::METHOD_SIGN, $options);
-
-        $orderResponse = new OrderResponse();
-        $orderResponse->orderRef = $response->orderRef;
-        $orderResponse->autoStartToken = $response->autoStartToken;
-
-        return $orderResponse;
+        return new OrderResponse($responseData);
     }
 
     /**
-     * @param $personalNumber
-     * @return OrderResponse
-     * @throws \SoapFault
-     */
-    public function getAuthResponse($personalNumber)
-    {
-        $parameters = [
-            'personalNumber' => $personalNumber,
-        ];
-
-        $options = ['parameters' => $parameters];
-
-        $response = $this->call(self::METHOD_AUTH, $options);
-
-        $orderResponse = new OrderResponse();
-        $orderResponse->orderRef = $response->orderRef;
-        $orderResponse->autoStartToken = $response->autoStartToken;
-
-        return $orderResponse;
-    }
-
-    /**
-     * @param string $orderRef
+     * @param string $orderRef Used to collect the status of the order.
      * @return CollectResponse
-     * @throws \SoapFault
+     * @throws ClientException
      */
     public function collectResponse($orderRef)
     {
-        $response = $this->call(self::METHOD_COLLECT, ['orderRef' => $orderRef]);
+        $responseData = $this->client->post('collect', ['json' => ['orderRef' => $orderRef]]);
 
-        $collect = new CollectResponse();
-        $collect->progressStatus = $response->progressStatus;
+        return new CollectResponse($responseData);
+    }
 
-        if ($collect->progressStatus == CollectResponse::PROGRESS_STATUS_COMPLETE) {
-            $collect->userInfo = $response->userInfo;
-            $collect->signature = $response->signature;
-            $collect->ocspResponse = $response->ocspResponse;
-        }
+    /**
+     * @param string $orderRef Used to collect the status of the order.
+     * @return bool
+     * @throws ClientException
+     */
+    public function cancelOrder($orderRef)
+    {
+        $responseCode = $this->client->post('cancel', ['json' => ['orderRef' => $orderRef]])->getStatusCode();
 
-        return $collect;
+        return $responseCode === 200;
     }
 }

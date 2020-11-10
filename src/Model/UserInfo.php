@@ -5,44 +5,12 @@ namespace Dimafe6\BankID\Model;
 /**
  * Class UserInfo
  *
- * @category PHP
- * @package  Dimafe6\BankID\Model
- * @author   Dmytro Feshchenko <dimafe2000@gmail.com>
+ * @property string personalNumber The personal number
+ * @property string name The given name and surname of the user
+ * @property string givenName The given name of the user
+ * @property string surname The surname of the user
  */
 class UserInfo
 {
-    /**
-     * @var string
-     */
-    public $givenName;
 
-    /**
-     * @var string
-     */
-    public $surname;
-
-    /**
-     * @var string
-     */
-    public $name;
-
-    /**
-     * @var string
-     */
-    public $personalNumber;
-
-    /**
-     * @var string
-     */
-    public $notBefore;
-
-    /**
-     * @var string
-     */
-    public $notAfter;
-
-    /**
-     * @var string
-     */
-    public $ipAddress;
 }

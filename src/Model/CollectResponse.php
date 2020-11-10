@@ -5,49 +5,32 @@ namespace Dimafe6\BankID\Model;
 /**
  * Class CollectResponse
  *
- * @category PHP
- * @package  Dimafe6\BankID\Model
- * @author   Dmytro Feshchenko <dimafe2000@gmail.com>
+ * Response from collect method
+ *
+ * @property string $orderRef The orderRef in question
+ * @property string status The order status.
+ *      pending: The order is being processed. hintCode describes the status of the order.
+ *      failed: Something went wrong with the order. hintCode describes the error.
+ *      complete: The order is complete. completionData holds user information
+ * @property string hintCode Only present for pending and failed orders.
+ * @property CompletionData completionData Only present for complete orders.
  */
-class CollectResponse
+class CollectResponse extends AbstractResponseModel
 {
-    const PROGRESS_STATUS_OUTSTANDING_TRANSACTION = 'OUTSTANDING_TRANSACTION';
-    const PROGRESS_STATUS_NO_CLIENT = 'NO_CLIENT';
-    const PROGRESS_STATUS_STARTED = 'STARTED';
-    const PROGRESS_STATUS_USER_SIGN = 'USER_SIGN';
-    const PROGRESS_STATUS_USER_REQ = 'USER_REQ';
-    const PROGRESS_STATUS_COMPLETE = 'COMPLETE';
+    const STATUS_COMPLETED = 'complete';
+    const STATUS_PENDING = 'pending';
+    const STATUS_FAILED = 'failed';
 
-    /**
-     * @var string
-     */
-    public $progressStatus;
+    const HINT_COMPLETED = 'complete';
 
-    /**
-     * String (b64). XML-signature. (If the order is COMPLETE). The content of the
-     * signature is described in BankID Signature Profile specification.
-     *
-     * @var string|null
-     */
-    public $signature;
+    const HINT_PENDING_OUTSTANDING_TRANSACTION = 'outstandingTransaction';
+    const HINT_PENDING_NO_CLIENT = 'noClient';
+    const HINT_PENDING_STARTED = 'started';
+    const HINT_PENDING_USER_SIGN = 'userSign';
 
-    /**
-     * UserInfoType (If the order is COMPLETE)
-     *
-     * @var UserInfo|null
-     */
-    public $userInfo;
-
-    /**
-     * String (b64). OCSP-response (If the order is COMPLETE). The OCSP response
-     * is signed by a certificate that has the same issuer as the certificate
-     * being verified. The OSCP response has an extension for Nonce.
-     * The nonce is calculated as:
-     * SHA-1 hash over the base 64 XML signature encoded as UTF-8.
-     * 12 random bytes is added after the hash
-     * The nonce is 32 bytes (20 + 12)
-     *
-     * @var string|null
-     */
-    public $ocspResponse;
+    const HINT_FAILED_EXPIRED_TRANSACTION = 'expiredTransaction';
+    const HINT_FAILED_CERTIFICATE_ERR = 'certificateErr';
+    const HINT_FAILED_USER_CANCEL = 'userCancel';
+    const HINT_FAILED_CANCELLED = 'cancelled';
+    const HINT_FAILED_START_FAILED = 'startFailed';
 }
