@@ -15,14 +15,14 @@ class BankIDServiceTest extends TestCase
      */
     private $bankIDService;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->bankIDService = new BankIDService(
-            'https://appapi2.test.bankid.com/rp/v5/',
+            'https://appapi2.test.bankid.com/rp/v5.1/',
             isset($_SERVER["REMOTE_ADDR"]) ? $_SERVER["REMOTE_ADDR"] : '127.0.0.1',
             [
                 'verify' => false,
-                'cert'   => realpath(__DIR__ . '/../bankId.pem'),
+                'cert'   => [realpath(__DIR__ . '/../FPTestcert3_20200618.p12'), "qwerty123"] // qwerty123 = default password from BankID,
             ]
         );
     }
