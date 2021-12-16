@@ -79,7 +79,7 @@ class BankIDService
      * @return OrderResponse
      * @throws ClientException
      */
-    public function getSignResponse($personalNumber, $userVisibleData, $userHiddenData = '')
+    public function getSignResponse($personalNumber, $userVisibleData, $userVisibleDataFormat, $userHiddenData = '')
     {
         $parameters = [
             'endUserIp'       => $this->endUserIp,
@@ -94,6 +94,10 @@ class BankIDService
 
         if (!empty($userHiddenData)) {
             $parameters['userNonVisibleData'] = base64_encode($userHiddenData);
+        }
+
+        if ($userVisibleDataFormat) {
+            $parameters['userVisibleDataFormat'] = $userVisibleDataFormat;
         }
 
         $responseData = $this->client->post('sign', ['json' => $parameters]);
