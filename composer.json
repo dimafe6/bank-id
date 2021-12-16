@@ -25,6 +25,10 @@
         {
             "name": "Puggan",
             "email": "puggan@spiro.se"
+        },
+        {
+            "name": "Sebastian Marcusson",
+            "email": "sebastian@aider.nu"
         }
     ],
     "require": {
