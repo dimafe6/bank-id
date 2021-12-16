@@ -76,10 +76,11 @@ class BankIDService
      * @param string|null $personalNumber The personal number of the user. String. 12 digits. Century must be included.
      * @param string $userVisibleData The text to be displayed and signed.
      * @param string $userHiddenData Data not displayed to the user
+     * @param string $userVisibleDataFormat Format for data displayed to the user
      * @return OrderResponse
      * @throws ClientException
      */
-    public function getSignResponse($personalNumber, $userVisibleData, $userHiddenData = '')
+    public function getSignResponse($personalNumber, $userVisibleData, $userHiddenData = '', $userVisibleDataFormat = null)
     {
         $parameters = [
             'endUserIp'       => $this->endUserIp,
@@ -94,6 +95,10 @@ class BankIDService
 
         if (!empty($userHiddenData)) {
             $parameters['userNonVisibleData'] = base64_encode($userHiddenData);
+        }
+
+        if (!is_null($userVisibleDataFormat)) {
+            $parameters['userVisibleDataFormat'] = $userVisibleDataFormat;
         }
 
         $responseData = $this->client->post('sign', ['json' => $parameters]);
